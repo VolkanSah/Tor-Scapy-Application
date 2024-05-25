@@ -30,3 +30,6 @@ or
 ```bash
 python3 tor_scapy_app.py
 ```
+### License
+
+This project is licensed under the MIT License.
