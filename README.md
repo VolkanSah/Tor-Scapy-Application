@@ -30,6 +30,13 @@ or
 ```bash
 python3 tor_scapy_app.py
 ```
+
+## Credits
+- [VolkanSah on Github](https://github.com/volkansah)
+- [Developer Site](https://volkansah.github.io)
+- [Become a 'Sponsor'](https://github.com/sponsors/volkansah)
+- [Source of this resposerity](https://github.com/VolkanSah/Tor-Scapy-Application)
+
 ### License
 
 This project is licensed under the MIT License.
