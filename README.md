@@ -1,4 +1,4 @@
-# Tor Scapy Application
+# Tor Scapy Application (TSA)
 ###### update 05/2024 & now public 4 all
 
 This project is a simple example of using Stem and Scapy together to create an anonymized network analysis tool. The application can connect to a running Tor process or start a new one, send network packets through the Tor network, and rotate identities.
