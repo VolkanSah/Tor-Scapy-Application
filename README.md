@@ -25,3 +25,8 @@ Run the application:
 
 ```bash
 python tor_scapy_app.py
+```
+or 
+```bash
+python3 tor_scapy_app.py
+```
