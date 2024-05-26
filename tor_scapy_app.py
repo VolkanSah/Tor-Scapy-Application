@@ -1,7 +1,7 @@
 ### `tor_scapy_app.py`
 ###  Nemesis Mr. Chess
 
-```python
+
 from stem import Signal
 from stem.control import Controller
 from stem.process import launch_tor_with_config
