@@ -14,8 +14,10 @@ def start_tor_process():
     print("Starting Tor process...")
     tor_process = launch_tor_with_config(
         config = {
+            # add your configs here!
             'SocksPort': '9050',
             'ControlPort': '9051',
+        
         },
         init_msg_handler = lambda line: print(line),
     )
@@ -60,6 +62,7 @@ if __name__ == "__main__":
         request_new_identity(controller)
 
         # Send a packet via Tor
+        # Example 
         destination_ip = "8.8.8.8"
         send_packet_via_tor(destination_ip)
 
