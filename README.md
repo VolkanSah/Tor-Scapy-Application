@@ -2,26 +2,11 @@
 ## 🛡️ Projekt-Badges
 
 
-[![License](https://img.shields.io/github/license/BENUTZER/REPO)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)](https://python.org)
 [![Tor Network](https://img.shields.io/badge/Anonymity-Tor-7D4698?logo=tor-project)](https://www.torproject.org/)
 [![Tor Controller](https://img.shields.io/badge/Tor_Controller-python--stem-4B0082)]()
 [![Packet Crafting](https://img.shields.io/badge/Packet_Crafting-Scapy-00AEEF?logo=wireshark)]()
 
-
-#### CI/CD & Tests
-[![Build Status](https://img.shields.io/github/actions/workflow/status/BENUTZER/REPO/main.yml?branch=main)](https://github.com/BENUTZER/REPO/actions)
-[![Code Coverage](https://img.shields.io/codecov/c/github/BENUTZER/REPO)](https://codecov.io/gh/BENUTZER/REPO)
-
-[![Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/BENUTZER/REPO)](https://snyk.io/)
-[![Code Size](https://img.shields.io/github/languages/code-size/BENUTZER/REPO)]()
-
-[![Last Commit](https://img.shields.io/github/last-commit/BENUTZER/REPO)]()
-[![Open Issues](https://img.shields.io/github/issues/BENUTZER/REPO)]()
-[![GitHub Stars](https://img.shields.io/github/stars/BENUTZER/REPO?style=flat&cacheSeconds=3600)]()
-[![PyPI Downloads](https://img.shields.io/pypi/dm/YOUR_PACKAGE_NAME)]()
-
-[![Philosophy](https://img.shields.io/badge/Philosophy-Volkan_K%C3%BCc%C3%BCkbudak-9C27B0)]()
 [![Ethical Security](https://img.shields.io/badge/Focus-Ethical_Security-000000?style=for-the-badge&logo=code-climate)]()
 
 The Tor Network Toolkit (TNT) is a multi-OS demonstration framework that showcases how to interact with the Tor network programmatically and how to run local packet-crafting operations using Scapy. Tor traffic and Scapy traffic remain strictly separated, as raw ICMP and TCP packets cannot be routed through Tor.
