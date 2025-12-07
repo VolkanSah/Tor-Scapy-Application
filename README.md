@@ -123,11 +123,44 @@ Respect the copyright. It is provided as a free learning resource under GPLv3.
 
 This project is licensed under the GNU General Public License v3 (GPLv3).
 You must retain the copyright notice and share modifications under the same license.
+> (Readme.md crafted with the help of AI. Code crafted by Volkan Sah)
 
 
 
-## Author
+
+
+
+## Your Support
+
+Found this useful?
+
+- ⭐ Star this repository
+- 🐛 Report issues
+- 💡 Suggest improvements
+- 💖 [Sponsor development](https://github.com/sponsors/volkansah)
+
+
+**Stay secure. Stay paranoid. 🔒**
+
+
+### Other Stuff
+
+##### Security Guides:
+- [Multiple Isolated Tor Instances for Hidden Services](https://github.com/VolkanSah/Multiple-Isolated-Tor-Instances-for-Hidden-Services)
+- [Security Headers — Complete Implementation Guide](https://github.com/VolkanSah/Security-Headers)
+- [Securing FastAPI Applications](https://github.com/VolkanSah/Securing-FastAPI-Applications)
+- [ModSecurity Webserver Protection Guide](https://github.com/VolkanSah/ModSecurity-Webserver-Protection-Guide)
+- [Tor Isolation Layer (TIL)](https://github.com/VolkanSah/Tor-Isolation-Layer)
+
+
+Thank you for your support! ❤️
+
+
+
+### Author
 
 Created by Volkan Sah (Kücükbudak).
-More projects: [https://volkansah.github.io](https://volkansah.github.io)
+> More privat projects: [https://volkansah.github.io](https://volkansah.github.io)
+
+> Updated on 07.12.2025
 
