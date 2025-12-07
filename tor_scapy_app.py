@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Tor Network Toolkit (TNT) - Multi-OS Tor Demo
-Zeigt Tor-Nutzung + Scapy packet crafting
+Demonstrates Tor usage + Scapy packet crafting (separated, since ICMP via Tor is not possible)
 """
 
 from stem import Signal
@@ -16,31 +16,31 @@ import os
 import requests
 from requests.exceptions import RequestException
 
-# Optional: Scapy nur wenn verfügbar
+# Optional: Scapy only if available
 try:
     from scapy.all import sr1, IP, ICMP, TCP, conf
     SCAPY_AVAILABLE = True
-    conf.verb = 0  # Scapy output reduzieren
+    conf.verb = 0  # Reduce Scapy output
 except ImportError:
     SCAPY_AVAILABLE = False
 
-# --- Konfiguration ---
+# --- Configuration ---
 SOCKS_PORT = 9050
 CONTROL_PORT = 9051
-TOR_DATA_DIR = "./tor_data"  # Eigenes Tor-Verzeichnis
+TOR_DATA_DIR = "./tor_data"  # Separate Tor data directory
 
-class TorController:
-    """Managed Tor-Prozess mit sauberer Cleanup"""
+class TorControlManager:
+    """Manages the Tor process with clean startup and cleanup using a context manager."""
     
     def __init__(self):
         self.process = None
         self.controller = None
         
-    def start(self):
-        """Startet Tor-Prozess und wartet auf Bootstrap"""
-        print("[*] Starte Tor-Prozess...")
+    def start_tor_process(self):
+        """Starts the Tor process and waits for bootstrap."""
+        print("[*] Starting Tor process...")
         
-        # DataDirectory für diesen Prozess
+        # Create DataDirectory for this process
         os.makedirs(TOR_DATA_DIR, exist_ok=True)
         
         try:
@@ -51,48 +51,48 @@ class TorController:
                     'DataDirectory': TOR_DATA_DIR,
                 },
                 init_msg_handler=self._init_msg_handler,
-                take_ownership=True,  # Wichtig: Cleanup bei Exit
+                take_ownership=True,  # Important: Ensures cleanup on exit
                 timeout=60
             )
             
-            # Warte bis Tor bereit ist
+            # Wait until Tor is ready
             time.sleep(3)
             self._connect_controller()
-            print("[✓] Tor ist bereit!\n")
+            print("[✓] Tor is ready!\n")
             
         except Exception as e:
-            print(f"[!] Tor-Start fehlgeschlagen: {e}")
+            print(f"[!] Tor startup failed: {e}")
             self._cleanup()
             raise
     
     def _init_msg_handler(self, line):
-        """Zeigt wichtige Tor-Statusmeldungen"""
+        """Displays important Tor status messages."""
         if "Bootstrapped" in line:
             print(f"[Tor] {line}")
     
     def _connect_controller(self):
-        """Verbindet zum Tor Control Port"""
+        """Connects to the Tor Control Port."""
         try:
             self.controller = Controller.from_port(port=CONTROL_PORT)
             self.controller.authenticate()
             print(f"[✓] Tor Version: {self.controller.get_version()}")
         except Exception as e:
-            print(f"[!] Controller-Verbindung fehlgeschlagen: {e}")
+            print(f"[!] Controller connection failed: {e}")
             raise
     
-    def new_identity(self):
-        """Fordert neue Tor-Identity an"""
+    def request_new_identity(self):
+        """Signals Tor to switch to a new identity (NEWNYM)."""
         if not self.controller:
-            print("[!] Kein Controller verbunden")
+            print("[!] No controller connected")
             return
         
-        print("[*] Fordere neue Identität an...")
+        print("[*] Requesting new identity...")
         self.controller.signal(Signal.NEWNYM)
-        time.sleep(5)  # Warte auf neuen Circuit
-        print("[✓] Neue Identität aktiv\n")
+        time.sleep(5)  # Wait for new circuit
+        print("[✓] New identity is active\n")
     
-    def get_current_ip(self):
-        """Zeigt aktuelle Exit-Node IP"""
+    def get_exit_ip(self):
+        """Displays the current Tor Exit Node IP using a Tor-proxied request."""
         try:
             proxies = {
                 'http': f'socks5h://127.0.0.1:{SOCKS_PORT}',
@@ -105,15 +105,15 @@ class TorController:
                 timeout=10
             )
             ip = resp.json().get('ip', 'Unknown')
-            print(f"[i] Aktuelle Tor Exit-IP: {ip}")
+            print(f"[i] Current Tor Exit IP: {ip}")
             return ip
             
         except RequestException as e:
-            print(f"[!] IP-Abfrage fehlgeschlagen: {e}")
+            print(f"[!] IP query failed: {e}")
             return None
     
     def _cleanup(self):
-        """Räumt Tor-Prozess auf"""
+        """Cleans up and terminates the Tor process."""
         if self.controller:
             try:
                 self.controller.close()
@@ -121,21 +121,21 @@ class TorController:
                 pass
         
         if self.process and self.process.poll() is None:
-            print("[*] Beende Tor-Prozess...")
+            print("[*] Terminating Tor process...")
             self.process.terminate()
             self.process.wait(timeout=10)
     
     def __enter__(self):
-        self.start()
+        self.start_tor_process()
         return self
     
     def __exit__(self, *args):
         self._cleanup()
 
 
-def demo_tor_request(url="http://check.torproject.org"):
-    """Demo: HTTP-Request über Tor"""
-    print(f"[*] Demo: HTTP-Request über Tor zu {url}")
+def run_tor_request_demo(url="http://check.torproject.org"):
+    """Demo: Performs an HTTP request via Tor."""
+    print(f"[*] Demo: HTTP Request via Tor to {url}")
     
     proxies = {
         'http': f'socks5h://127.0.0.1:{SOCKS_PORT}',
@@ -146,36 +146,41 @@ def demo_tor_request(url="http://check.torproject.org"):
         resp = requests.get(url, proxies=proxies, timeout=15)
         
         if "Congratulations" in resp.text:
-            print("[✓] Tor funktioniert! Du nutzt das Tor-Netzwerk.")
+            print("[✓] Tor is working! You are using the Tor network.")
         else:
-            print("[i] Antwort erhalten:")
+            print("[i] Response received:")
             print(resp.text[:200])
         
         print(f"[i] Status Code: {resp.status_code}\n")
         
     except RequestException as e:
-        print(f"[!] Request fehlgeschlagen: {e}\n")
+        print(f"[!] Request failed: {e}\n")
 
 
-def demo_scapy_local(target="8.8.8.8"):
-    """Demo: Lokaler ICMP Ping mit Scapy (OHNE Tor)"""
+def run_scapy_icmp_demo(target="8.8.8.8"):
+    """Demo: Local ICMP Ping using Scapy (WITHOUT Tor)."""
     if not SCAPY_AVAILABLE:
-        print("[!] Scapy nicht installiert. Pip: pip install scapy\n")
+        print("[!] Scapy not installed. Install with: pip install scapy\n")
         return
     
-    print(f"[*] Demo: Lokaler ICMP Ping zu {target}")
-    print("[i] Hinweis: Läuft NICHT über Tor (ICMP geht nicht über SOCKS)")
+    print(f"[*] Demo: Local ICMP Ping to {target}")
+    print("[i] Note: Running LOCALLY (ICMP does not route via SOCKS)")
     
-    # Check für Admin-Rechte
+    # Check for admin/root privileges
+    # A cleaner cross-platform check for raw socket capabilities might be complex, 
+    # but checking for root/admin is a common proxy.
+    is_admin = False
     if os.name == 'nt':  # Windows
-        is_admin = os.getuid() == 0 if hasattr(os, 'getuid') else True
-    else:  # Unix-like
-        is_admin = os.geteuid() == 0 if hasattr(os, 'geteuid') else False
+        # Windows privilege check is tricky, simplified assumption here
+        pass
+    elif hasattr(os, 'geteuid'):  # Unix-like
+        is_admin = os.geteuid() == 0
+
     
-    if not is_admin:
-        print("[!] Benötigt Admin/Root-Rechte für raw sockets!")
+    if not is_admin and os.name != 'nt': # Only prompt for Unix-like systems for simplicity
+        print("[!] Requires Admin/Root privileges for raw sockets!")
         print("[i] Linux/Mac: sudo python script.py")
-        print("[i] Windows: Als Administrator ausführen\n")
+        print("[i] Windows: Run as Administrator\n")
         return
     
     try:
@@ -184,22 +189,22 @@ def demo_scapy_local(target="8.8.8.8"):
         resp = sr1(pkt, timeout=3, verbose=0)
         
         if resp:
-            print(f"[✓] Antwort von {resp.src}")
+            print(f"[✓] Reply from {resp.src}")
             print(f"[i] TTL: {resp.ttl}, Type: {resp.type}\n")
         else:
-            print(f"[!] Keine Antwort von {target}\n")
+            print(f"[!] No reply from {target}\n")
             
     except Exception as e:
-        print(f"[!] Scapy-Fehler: {e}\n")
+        print(f"[!] Scapy error: {e}\n")
 
 
-def demo_scapy_tcp_syn(target="1.1.1.1", port=80):
-    """Demo: TCP SYN-Scan mit Scapy (lokal, OHNE Tor)"""
+def run_scapy_tcp_syn_demo(target="1.1.1.1", port=80):
+    """Demo: TCP SYN scan using Scapy (local, WITHOUT Tor)."""
     if not SCAPY_AVAILABLE:
         return
     
-    print(f"[*] Demo: TCP SYN zu {target}:{port}")
-    print("[i] Läuft NICHT über Tor\n")
+    print(f"[*] Demo: TCP SYN to {target}:{port}")
+    print("[i] Note: Running LOCALLY\n")
     
     try:
         pkt = IP(dst=target)/TCP(dport=port, flags="S")
@@ -207,14 +212,16 @@ def demo_scapy_tcp_syn(target="1.1.1.1", port=80):
         
         if resp and resp.haslayer(TCP):
             if resp[TCP].flags == "SA":  # SYN-ACK
-                print(f"[✓] Port {port} ist OFFEN")
+                print(f"[✓] Port {port} is OPEN")
             elif resp[TCP].flags == "RA":  # RST-ACK
-                print(f"[i] Port {port} ist GESCHLOSSEN")
+                print(f"[i] Port {port} is CLOSED")
+            else:
+                print(f"[i] Received unknown TCP flag response: {resp[TCP].flags}")
         else:
-            print(f"[!] Keine Antwort (gefiltert?)\n")
+            print(f"[!] No response (filtered?)\n")
             
     except Exception as e:
-        print(f"[!] TCP-Scan Fehler: {e}\n")
+        print(f"[!] TCP Scan error: {e}\n")
 
 
 def main():
@@ -222,10 +229,10 @@ def main():
         description="🧅 Tor Network Toolkit - Multi-OS Demo",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Beispiele:
-  python %(prog)s --mode tor              # Nur Tor-Requests
-  python %(prog)s --mode scapy            # Nur Scapy-Demos (lokal)
-  python %(prog)s --mode full             # Alles zeigen
+Examples:
+  python %(prog)s --mode tor             # Run Tor-only requests
+  python %(prog)s --mode scapy           # Run Scapy-only demos (local)
+  python %(prog)s --mode full            # Run all demos
   python %(prog)s --url https://icanhazip.com
         """
     )
@@ -234,25 +241,25 @@ Beispiele:
         '--mode',
         choices=['tor', 'scapy', 'full'],
         default='full',
-        help='Demo-Modus auswählen'
+        help='Select the demo mode to run'
     )
     
     parser.add_argument(
         '--url',
         default='http://check.torproject.org',
-        help='URL für Tor-Request'
+        help='URL for the Tor HTTP request'
     )
     
     parser.add_argument(
         '--target',
         default='8.8.8.8',
-        help='Ziel-IP für Scapy-Demos'
+        help='Target IP for Scapy demos'
     )
     
     parser.add_argument(
         '--new-identity',
         action='store_true',
-        help='Neue Tor-Identität vor Request anfordern'
+        help='Request a new Tor identity before the request'
     )
     
     args = parser.parse_args()
@@ -261,30 +268,33 @@ Beispiele:
     print("🧅  Tor Network Toolkit (TNT)")
     print("=" * 50 + "\n")
     
-    # Scapy-Demos (ohne Tor)
+    # Scapy Demos (local, without Tor)
     if args.mode in ['scapy', 'full']:
-        demo_scapy_local(args.target)
-        demo_scapy_tcp_syn(args.target, 443)
+        run_scapy_icmp_demo(args.target)
+        run_scapy_tcp_syn_demo(args.target, 443)
     
-    # Tor-Demos
+    # Tor Demos
     if args.mode in ['tor', 'full']:
         try:
-            with TorController() as tor:
-                tor.get_current_ip()
+            # Using the Context Manager (with ... as ...) ensures cleanup
+            with TorControlManager() as tor:
+                # Show initial Exit IP
+                tor.get_exit_ip()
                 
                 if args.new_identity:
-                    tor.new_identity()
-                    tor.get_current_ip()
+                    tor.request_new_identity()
+                    # Show new Exit IP after requesting new identity
+                    tor.get_exit_ip()
                 
-                demo_tor_request(args.url)
+                run_tor_request_demo(args.url)
                 
         except KeyboardInterrupt:
-            print("\n[!] Abgebrochen durch User")
+            print("\n[!] Operation cancelled by user.")
         except Exception as e:
-            print(f"\n[!] Fehler: {e}")
+            print(f"\n[!] An error occurred: {e}")
     
     print("=" * 50)
-    print("[✓] Demo beendet")
+    print("[✓] Demo finished")
     print("=" * 50)
 
 
