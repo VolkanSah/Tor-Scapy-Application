@@ -1,6 +1,4 @@
 # Tor Network Toolkit (TNT)
-## 🛡️ Projekt-Badges
-
 [![Ethical Security](https://img.shields.io/badge/Focus-Ethical_Security-000000?style=for-the-badge&logo=code-climate)]()
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)](https://python.org)
