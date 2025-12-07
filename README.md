@@ -6,7 +6,6 @@
 [![Tor Network](https://img.shields.io/badge/Anonymity-Tor-7D4698?logo=tor-project)](https://www.torproject.org/)
 [![Tor Controller](https://img.shields.io/badge/Tor_Controller-python--stem-4B0082)]()
 [![Packet Crafting](https://img.shields.io/badge/Packet_Crafting-Scapy-00AEEF?logo=wireshark)]()
-
 [![Ethical Security](https://img.shields.io/badge/Focus-Ethical_Security-000000?style=for-the-badge&logo=code-climate)]()
 
 The Tor Network Toolkit (TNT) is a multi-OS demonstration framework that showcases how to interact with the Tor network programmatically and how to run local packet-crafting operations using Scapy. Tor traffic and Scapy traffic remain strictly separated, as raw ICMP and TCP packets cannot be routed through Tor.
