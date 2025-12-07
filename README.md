@@ -1,4 +1,7 @@
 # Tor Network Toolkit (TNT)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)](https://python.org)
+[![Scapy](https://img.shields.io/badge/Networking-Scapy-F05032?logo=wireshark)]()
+[![Tor Network](https://img.shields.io/badge/Anonymity-Tor-7D4698?logo=tor-project)](https://www.torproject.org/)
 
 The Tor Network Toolkit (TNT) is a multi-OS demonstration framework that showcases how to interact with the Tor network programmatically and how to run local packet-crafting operations using Scapy. Tor traffic and Scapy traffic remain strictly separated, as raw ICMP and TCP packets cannot be routed through Tor.
 
