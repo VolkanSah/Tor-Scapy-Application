@@ -1,3 +1,34 @@
+# ------------------------------------------------------------------
+# COPYRIGHT & LICENSING
+# ------------------------------------------------------------------
+# Copyright (C) 2008-2025 Volkan Sah (Kücükbudak)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# A copy of the GNU General Public License (GPLv3) must be included
+# with this distribution.
+#
+# --- ATTENTION: MANDATORY GPLv3 REQUIREMENTS ---
+#
+# 1. YOU MUST RETAIN THIS COPYRIGHT NOTICE: This code is FREE, but it is 
+#    NOT Public Domain. Volkan Sah (Kücükbudak) holds the copyright. 
+#    Removing this copyright line is a direct violation of the GPLv3 
+#    and immediately terminates your right to use the code. 
+#
+# 2. YOU MUST SHARE YOUR CHANGES: If you modify this code and distribute it, 
+#    your modified version MUST ALSO be released under the GPLv3, 
+#    and you MUST provide the source code.
+#
+# Respect the work of developers who provide secure, open code. Do not remove 
+# or obscure the author's identity.
 #!/usr/bin/env python3
 """
 Tor Network Toolkit (TNT) - Multi-OS Tor Demo
