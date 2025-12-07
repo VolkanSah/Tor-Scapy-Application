@@ -1,86 +1,121 @@
-# Tor Scapy Application (TSA)
+# Tor Network Toolkit (TNT)
 
-**Tor Scapy Application** is a simple yet powerful tool that combines [Stem](https://stem.torproject.org/) and [Scapy](https://scapy.net/) to send network packets anonymously through the Tor network. It can start a Tor process, connect to it, and rotate your Tor identity on demand. Perfect for network analysis, testing, or just playing with Tor + Python magic.
+The Tor Network Toolkit (TNT) is a multi-OS demonstration framework that showcases how to interact with the Tor network programmatically and how to run local packet-crafting operations using Scapy. Tor traffic and Scapy traffic remain strictly separated, as raw ICMP and TCP packets cannot be routed through Tor. 
 
----
+This project is designed for researchers, analysts, and developers who need a clean, minimal, and reproducible demo setup for Tor automation and local network inspection.
+
+#
 
 ## Features
 
-* Launch a Tor process programmatically
-* Connect to an existing Tor controller
-* Rotate Tor identities on the fly (NEWNYM signal)
-* Send ICMP packets via Tor SOCKS5 proxy
-* Easy to customize for your own network tasks
+- Launches a Tor process with a dedicated data directory
+- Full lifecycle control via context manager (startup, controller authentication, cleanup)
+- Requests a new Tor identity (NEWNYM)
+- Queries the current Tor exit IP
+- Performs HTTP requests via Tor (SOCKS5)
+- Local ICMP Echo demo via Scapy
+- Local TCP SYN demo via Scapy
+- Cross-platform privilege detection for raw sockets
 
----
 
-## Requirements
+### Requirements
 
-* Python 3.x
-* [Stem](https://stem.torproject.org/) Python library
-* [Scapy](https://scapy.net/) Python library
-* Tor installed and running (or launched via script)
+- Python 3.x
+- Tor installed on the system or automatically launched
+- Python packages:
+  - `stem`
+  - `requests`
+  - `pysocks`
+  - `scapy` (optional, only required for local demos)
 
----
+Install all dependencies with:
 
-## Installation
-
-1. Install Python 3.x:
-   [https://www.python.org/downloads/](https://www.python.org/downloads/)
-
-2. Install required Python packages:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-   *(Make sure requirements.txt includes `stem` and `scapy`)*
-
-3. Install and start Tor:
-
-   * Download from [https://www.torproject.org/](https://www.torproject.org/)
-   * Or let the script launch Tor automatically
+```bash
+pip install -r requirements.txt
+````
 
 ---
 
 ## Usage
 
-Run the app:
+Run the toolkit with default settings:
 
 ```bash
-python tor_scapy_app.py
+python3 tnt.py
 ```
 
-or
+Select a specific mode:
 
 ```bash
-python3 tor_scapy_app.py
+python3 tnt.py --mode tor
+python3 tnt.py --mode scapy
+python3 tnt.py --mode full
 ```
 
-By default, it sends an ICMP (ping) packet to `8.8.8.8` through the Tor network and shows the response.
+Use a custom URL for the Tor HTTP request:
+
+```bash
+python3 tnt.py --url https://icanhazip.com
+```
+
+Request a new Tor identity before performing requests:
+
+```bash
+python3 tnt.py --new-identity
+```
+
+Change the target for Scapy demos:
+
+```bash
+python3 tnt.py --target 1.1.1.1
+```
+
+---
+
+### Modes
+
+#### Tor Mode
+
+* Starts a Tor instance
+* Connects to the control port
+* Gets exit IP
+* Optional NEWNYM identity change
+* Performs an HTTP request through Tor
+
+#### Scapy Mode
+
+* ICMP Echo Request (local, raw sockets)
+* TCP SYN probe (local, raw sockets)
+* Does not use Tor
+
+#### Full Mode
+
+Runs both Tor and Scapy demos sequentially.
+
+---
+
+### Notes and Limitations
+
+* ICMP and TCP raw packets cannot be routed through Tor; they are executed locally.
+* Raw socket operations require administrator/root privileges.
+* NEWNYM requires a short cooldown until a new circuit becomes active.
+* The Tor data directory is isolated (`./tor_data`) for reproducibility.
+* Ensure that the Tor control port is enabled if you use an external Tor instance.
+
+---
+
+### License
+
+This project is licensed under the GNU General Public License v3 (GPLv3).
+You must retain the copyright notice and share modifications under the same license.
 
 
 
-## Customization
+### Author
 
-* Modify `start_tor_process()` to add your Tor configs (e.g., ports, bridges)
-* Change the `destination_ip` variable in `__main__` to target a different host
-* Extend `send_packet_via_tor()` to send other packet types supported by Scapy
-
+Created by Volkan Sah (Kücükbudak).
+More projects: [https://volkansah.github.io](https://volkansah.github.io)
 
 
-## Notes
-
-* The script requires the Tor control port (`9051` by default) to be enabled and accessible
-* Identity change takes a few seconds (`time.sleep(5)` after NEWNYM signal)
-* Running with root/admin privileges may be needed for sending raw packets
-* Use responsibly and respect network policies and laws
 
 
-## Credits & Support
-Visit [https://volkansah.github.io](https://volkansah.github.io) for more projects
-
-
-## License
-
-This project is licensed under the **MIT License** — do what you want, just keep it cool.
