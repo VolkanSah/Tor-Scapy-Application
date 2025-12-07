@@ -2,6 +2,7 @@
 ## 🛡️ Projekt-Badges
 
 [![Ethical Security](https://img.shields.io/badge/Focus-Ethical_Security-000000?style=for-the-badge&logo=code-climate)]()
+
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)](https://python.org)
 [![Tor Network](https://img.shields.io/badge/Anonymity-Tor-7D4698?logo=tor-project)](https://www.torproject.org/)
 [![Tor Controller](https://img.shields.io/badge/Tor_Controller-python--stem-4B0082)]()
