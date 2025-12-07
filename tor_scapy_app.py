@@ -157,6 +157,18 @@ def run_tor_request_demo(url="http://check.torproject.org"):
         print(f"[!] Request failed: {e}\n")
 
 
+def check_admin_privileges():
+    """Cross-platform check for elevated privileges (root/admin)."""
+    try:
+        if os.name == 'nt':  # Windows
+            import ctypes
+            return ctypes.windll.shell32.IsUserAnAdmin() != 0
+        else:  # Unix-like (Linux, macOS, BSD)
+            return os.geteuid() == 0
+    except Exception:
+        return False
+
+
 def run_scapy_icmp_demo(target="8.8.8.8"):
     """Demo: Local ICMP Ping using Scapy (WITHOUT Tor)."""
     if not SCAPY_AVAILABLE:
@@ -166,21 +178,13 @@ def run_scapy_icmp_demo(target="8.8.8.8"):
     print(f"[*] Demo: Local ICMP Ping to {target}")
     print("[i] Note: Running LOCALLY (ICMP does not route via SOCKS)")
     
-    # Check for admin/root privileges
-    # A cleaner cross-platform check for raw socket capabilities might be complex, 
-    # but checking for root/admin is a common proxy.
-    is_admin = False
-    if os.name == 'nt':  # Windows
-        # Windows privilege check is tricky, simplified assumption here
-        pass
-    elif hasattr(os, 'geteuid'):  # Unix-like
-        is_admin = os.geteuid() == 0
-
-    
-    if not is_admin and os.name != 'nt': # Only prompt for Unix-like systems for simplicity
+    if not check_admin_privileges():
         print("[!] Requires Admin/Root privileges for raw sockets!")
-        print("[i] Linux/Mac: sudo python script.py")
-        print("[i] Windows: Run as Administrator\n")
+        if os.name == 'nt':
+            print("[i] Windows: Run as Administrator (right-click → 'Run as administrator')")
+        else:
+            print("[i] Linux/Mac: Run with sudo (e.g., sudo python3 script.py)")
+        print()
         return
     
     try:
@@ -206,17 +210,23 @@ def run_scapy_tcp_syn_demo(target="1.1.1.1", port=80):
     print(f"[*] Demo: TCP SYN to {target}:{port}")
     print("[i] Note: Running LOCALLY\n")
     
+    if not check_admin_privileges():
+        print("[!] Requires Admin/Root privileges for raw sockets!")
+        print("[i] Skipping TCP SYN demo\n")
+        return
+    
     try:
         pkt = IP(dst=target)/TCP(dport=port, flags="S")
         resp = sr1(pkt, timeout=2, verbose=0)
         
         if resp and resp.haslayer(TCP):
-            if resp[TCP].flags == "SA":  # SYN-ACK
-                print(f"[✓] Port {port} is OPEN")
-            elif resp[TCP].flags == "RA":  # RST-ACK
-                print(f"[i] Port {port} is CLOSED")
+            flags = resp[TCP].flags
+            if flags == "SA":  # SYN-ACK
+                print(f"[✓] Port {port} is OPEN\n")
+            elif flags == "RA":  # RST-ACK
+                print(f"[i] Port {port} is CLOSED\n")
             else:
-                print(f"[i] Received unknown TCP flag response: {resp[TCP].flags}")
+                print(f"[i] Received TCP flags: {flags}\n")
         else:
             print(f"[!] No response (filtered?)\n")
             
